@@ -241,24 +241,35 @@ function PrintingPage({ files, onGoBack }) {
     formData.append('binding', binding ? 'true' : 'false');
     formData.append('copies', numberOfCopies.toString());
 
-    const bearerToken = 'your-token-here'; // replace with actual token
+    const bearerToken = localStorage.getItem('token'); // ✅ get token from storage
+
+    if (!bearerToken) {
+      console.error('No access token found in localStorage.');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:8000/api/v1/documents/upload', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${bearerToken}` },
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+          // ❌ Don't set Content-Type for FormData manually — browser will do it
+        },
         body: formData,
       });
-      if (response.ok) {
-        const result = await response.json();
-        alert('Files uploaded successfully!');
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Upload failed:', data);
       } else {
-        alert(`Upload failed: ${response.status}`);
+        console.log('Upload success:', data);
       }
-    } catch (error) {
-      alert('Error during upload. See console.');
+    } catch (err) {
+      console.error('Unexpected error during upload:', err);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4 font-sans">

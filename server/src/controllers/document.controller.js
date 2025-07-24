@@ -30,7 +30,6 @@ const uploadDocument = asyncHandler(async (req, res) => {
       try {
         pageCount = await getPdfPageCount(file.path);
       } catch (err) {
-        fs.unlinkSync(file.path); // Cleanup temp file
         throw new ApiError("Failed to read PDF page count", 500);
       }
     }
