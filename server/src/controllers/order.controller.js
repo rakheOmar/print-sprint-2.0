@@ -57,10 +57,10 @@ const createOrder = asyncHandler(async (req, res) => {
 // Get orders
 const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
-    .populate("documents")
+    .populate("document") 
     .sort({ createdAt: -1 });
 
-  return res.status(200).json(new ApiResponse(200, orders));
+  return res.status(200).json(new ApiResponse(200, "Orders retrieved successfully", orders));
 });
 
 // Cancel Order
@@ -86,7 +86,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, order, "Order cancelled successfully"));
+    .json(new ApiResponse(200,  "Order cancelled successfully", order));
 });
 
 export { createOrder, getMyOrders, cancelOrder };

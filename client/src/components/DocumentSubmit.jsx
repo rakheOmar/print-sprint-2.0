@@ -241,7 +241,7 @@ function PrintingPage({ files, onGoBack }) {
     formData.append('binding', binding ? 'true' : 'false');
     formData.append('copies', numberOfCopies.toString());
 
-    const bearerToken = localStorage.getItem('token'); // ✅ get token from storage
+    const bearerToken = localStorage.getItem('token');
 
     if (!bearerToken) {
       console.error('No access token found in localStorage.');
@@ -253,22 +253,32 @@ function PrintingPage({ files, onGoBack }) {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${bearerToken}`,
-          // ❌ Don't set Content-Type for FormData manually — browser will do it
+          // Don't set Content-Type manually for FormData
         },
         body: formData,
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        console.error('Upload failed:', data);
-      } else {
-        console.log('Upload success:', data);
+        throw new Error(result.message || 'Upload failed');
       }
+
+      // ✅ Successful upload
+      if (Array.isArray(result.message)) {
+        const documentIds = result.message.map(doc => doc._id);
+        const existingIds = JSON.parse(localStorage.getItem('documentIds') || '[]');
+        const updatedIds = [...new Set([...existingIds, ...documentIds])]; // avoid duplicates
+        localStorage.setItem('documentIds', JSON.stringify(updatedIds));
+        console.log('Stored document IDs:', updatedIds);
+      }
+      window.location.href = '/cart';
     } catch (err) {
-      console.error('Unexpected error during upload:', err);
+      console.error('Error during file upload:', err);
+      alert('Failed to upload documents. Please try again.');
     }
   };
+
 
 
   return (
