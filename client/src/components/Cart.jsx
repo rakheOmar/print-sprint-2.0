@@ -102,17 +102,18 @@ export default function CartPage() {
       return;
     }
 
-    // TODO: Replace with actual UI form data later
-    const orderDetails = {
-      documentIds,
-      deliveryAddress: "123 Main Street, Bangalore",
-      customerName: "Omar Rakhe",
-      customerPhone: "9876543210",
-      customerEmail: "omar@example.com",
-      paymentType: "cash"
-    };
-
+    setPlacingOrder(true); // Set placing order state
     try {
+      // TODO: Replace with actual UI form data later
+      const orderDetails = {
+        documentIds,
+        deliveryAddress: "123 Main Street, Bangalore",
+        customerName: "Omar Rakhe",
+        customerPhone: "9876543210",
+        customerEmail: "omar@example.com",
+        paymentType: "cash"
+      };
+
       const response = await fetch('http://localhost:8000/api/v1/orders/', {
         method: 'POST',
         headers: {
@@ -141,12 +142,16 @@ export default function CartPage() {
       console.log("✅ Order placed:", result);
 
       localStorage.setItem('documentIds', '[]');
-      alert("Order placed successfully!");
-      window.location.href = '/'; // ✅ redirect without React Router
-
+      setOrderPlaced(true); // Set order placed state to true
+      // No alert here, rely on the visual success message
+      setTimeout(() => {
+        window.location.href = '/'; // Redirect after a short delay
+      }, 2000); // Redirect after 2 seconds
     } catch (err) {
       console.error("❌ Unexpected error placing order:", err);
       alert("Unexpected error placing order.");
+    } finally {
+      setPlacingOrder(false); // Reset placing order state
     }
   };
 
@@ -156,9 +161,28 @@ export default function CartPage() {
     return totalPages * pricePerPage;
   };
 
+  // Conditional rendering for empty cart vs. full cart
+  if (!loading && !error && documents.length === 0) {
+    return (
+      <div className="min-h-screen bg-base-200 p-6 flex flex-col justify-center items-center">
+        <h1 className="text-3xl font-bold mb-4 flex items-center gap-2 text-white">
+          <ShoppingCart className="w-7 h-7 text-primary" /> Your Cart
+        </h1>
+        <div className="text-center p-10 bg-base-100 rounded-box shadow-lg max-w-lg w-full mx-auto border-2 border-dashed border-base-300">
+          <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <p className="text-lg mb-4 text-gray-500">Your cart is empty. Add some documents!</p>
+          <button onClick={() => (window.location.href = '/print-section')} className="btn btn-primary btn-wide">
+            <Upload className="w-4 h-4 mr-2" /> Upload Document
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Render full cart if not empty and not loading/error
   return (
-    <div className="min-h-screen bg-base-200 p-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-base-200 p-6 flex justify-center items-start">
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <h1 className="text-3xl font-bold mb-4 flex items-center gap-2">
             <ShoppingCart className="w-7 h-7 text-primary" /> Your Cart
@@ -176,67 +200,54 @@ export default function CartPage() {
             </div>
           )}
 
-          {!loading && !error && documents.length === 0 && (
-            <div className="text-center p-10 bg-base-100 rounded-box shadow-lg border">
-              <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <p className="text-lg mb-4 text-gray-500">Your cart is empty. Add some documents!</p>
-              <button onClick={() => (window.location.href = '/')} className="btn btn-primary btn-wide">
-                <Upload className="w-4 h-4 mr-2" /> Upload Document
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && documents.length > 0 && (
-            <>
-              <div className="space-y-5 mb-6">
-                {documents.map(doc => (
-                  <div key={doc._id} className="card bg-base-100 shadow-md border border-base-300">
-                    <div className="card-body flex flex-col md:flex-row items-start gap-4">
-                      <div className="w-28 h-28 rounded-md overflow-hidden border border-base-300">
-                        {doc.fileUrl?.endsWith('.png') ||
-                          doc.fileUrl?.endsWith('.jpg') ||
-                          doc.fileUrl?.endsWith('.jpeg') ? (
-                          <img
-                            src={doc.fileUrl}
-                            alt={doc.originalName}
-                            className="object-cover w-full h-full"
-                          />
-                        ) : (
-                          <div className="bg-primary text-white w-full h-full flex items-center justify-center">
-                            <FileText className="w-10 h-10" />
-                          </div>
-                        )}
+          {/* This part will now only render if documents.length > 0 */}
+          <div className="space-y-5 mb-6">
+            {documents.map(doc => (
+              <div key={doc._id} className="card bg-base-100 shadow-md border border-base-300">
+                <div className="card-body flex flex-col md:flex-row items-start gap-4">
+                  <div className="w-28 h-28 rounded-md overflow-hidden border border-base-300">
+                    {doc.fileUrl?.endsWith('.png') ||
+                      doc.fileUrl?.endsWith('.jpg') ||
+                      doc.fileUrl?.endsWith('.jpeg') ? (
+                      <img
+                        src={doc.fileUrl}
+                        alt={doc.originalName}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="bg-primary text-white w-full h-full flex items-center justify-center">
+                        <FileText className="w-10 h-10" />
                       </div>
+                    )}
+                  </div>
 
-                      <div className="flex-grow">
-                        <h2 className="card-title">{doc.originalName}</h2>
-                        <div className="flex flex-wrap gap-2 text-sm mt-2">
-                          <div className="badge badge-info">{doc.pageCount} pages</div>
-                          <div className="badge badge-secondary">{doc.printOptions.size}</div>
-                          <div className="badge badge-outline">
-                            {doc.printOptions.colorType === 'color' ? 'Color' : 'B&W'}
-                          </div>
-                          {doc.printOptions.binding && <div className="badge badge-accent">Bound</div>}
-                          <div className="badge badge-warning">Copies: {doc.printOptions.copies}</div>
-                        </div>
+                  <div className="flex-grow">
+                    <h2 className="card-title">{doc.originalName}</h2>
+                    <div className="flex flex-wrap gap-2 text-sm mt-2">
+                      <div className="badge badge-info">{doc.pageCount} pages</div>
+                      <div className="badge badge-secondary">{doc.printOptions.size}</div>
+                      <div className="badge badge-outline">
+                        {doc.printOptions.colorType === 'color' ? 'Color' : 'B&W'}
                       </div>
-
-                      <button
-                        onClick={() => handleRemoveDocument(doc._id)}
-                        className="btn btn-sm btn-error self-start mt-2 md:mt-0"
-                      >
-                        <XCircle className="w-4 h-4 mr-1" /> Remove
-                      </button>
+                      {doc.printOptions.binding && <div className="badge badge-accent">Bound</div>}
+                      <div className="badge badge-warning">Copies: {doc.printOptions.copies}</div>
                     </div>
                   </div>
-                ))}
+
+                  <button
+                    onClick={() => handleRemoveDocument(doc._id)}
+                    className="btn btn-sm btn-error self-start mt-2 md:mt-0"
+                  >
+                    <XCircle className="w-4 h-4 mr-1" /> Remove
+                  </button>
+                </div>
               </div>
-            </>
-          )}
+            ))}
+          </div>
         </div>
 
         {/* Order Summary */}
-        {!loading && documents.length > 0 && (
+        {!loading && documents.length > 0 && ( // Ensure this only shows when cart has items
           <div className="bg-base-100 shadow-lg rounded-box p-6 flex flex-col gap-4 self-start mt-2">
             <h2 className="text-xl font-bold border-b pb-2">Order Summary</h2>
             <div className="flex justify-between">
@@ -261,6 +272,7 @@ export default function CartPage() {
               <button
                 className={`btn btn-primary w-full mt-4 ${placingOrder ? 'btn-disabled' : ''}`}
                 onClick={handlePlaceOrder}
+                disabled={placingOrder}
               >
                 {placingOrder ? 'Placing Order...' : 'Place Order'}
               </button>
@@ -278,7 +290,6 @@ export default function CartPage() {
             </button>
           </div>
         )}
-
       </div>
     </div>
   );

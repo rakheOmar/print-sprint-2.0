@@ -9,7 +9,7 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-10">
                 {/* Brand + Social */}
                 <div>
-                    <h2 className="text-2xl font-bold text-primary">PrintSprint</h2>
+                    <h2 className="text-2xl font-bold text-primary">PaperSprint</h2>
                     <p className="mt-2 text-sm">Your ideas, printed to perfection.</p>
                     <div className="flex space-x-4 mt-4 text-lg">
                         <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
@@ -58,8 +58,8 @@ const Footer = () => {
                         <button className="btn btn-primary w-full">Subscribe</button>
                     </form>
                     <div className="mt-4 text-sm">
-                        <p>Email: <a href="mailto:info@printsprint.com" className="link">info@printsprint.com</a></p>
-                        <p>Phone: <a href="tel:+1234567890" className="link">+1 (234) 567-890</a></p>
+                        <p>Email: <a href="mailto:papersprint@gmail.com.com" className="link">papersprint@gmail.com</a></p>
+                        <p>Phone: <a href="tel:+918104912527" className="link">+91 8104912527</a></p>
                         <p>123 Print St, Inkville, PR</p>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const Footer = () => {
 
             {/* Bottom Note */}
             <div className="text-center text-xs py-4 border-t border-base-300">
-                © {currentYear} PrintSprint. All rights reserved.
+                © {currentYear} PaperSprint. All rights reserved.
             </div>
         </footer>
     );

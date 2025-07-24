@@ -58,7 +58,7 @@ const Navbar = () => {
       <div className="navbar bg-base-100 shadow-md px-4 md:px-10 sticky top-0 z-50">
         {/* Logo */}
         <div className="flex-1">
-          <Link to="/" className="text-2xl font-bold text-primary">PrintSprint</Link>
+          <Link to="/" className="text-2xl font-bold text-primary">PaperSprint</Link>
         </div>
 
         {/* Location Picker */}

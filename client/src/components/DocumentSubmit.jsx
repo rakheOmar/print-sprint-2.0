@@ -81,8 +81,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4 font-sans">
       <div className="bg-base-100 p-8 rounded-lg shadow-xl max-w-2xl w-full">
-        <h1 className="text-5xl font-extrabold text-center mb-2 tracking-tight">Sprint Print</h1>
-        <TypingEffect text="Your Fast & Secure Printing Solution" speed={70} />
+        <h1 className="text-5xl font-extrabold text-center mb-2 tracking-tight">Paper Sprint</h1>
+        <TypingEffect text="YOur Fast & Secure Printing Solution" speed={90} />
 
         <FileUploadArea onFileUpload={handleFileUpload} />
 
