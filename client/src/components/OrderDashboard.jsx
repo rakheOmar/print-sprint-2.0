@@ -18,21 +18,18 @@ const markerIcon = new L.Icon({
   iconSize: [30, 30],
 });
 
-// Generate random location ~1km away
-const getRandomNearbyLocation = (lat, lon, distance = 1) => {
-  const R = 6378.1; // Earth radius in km
-  const bearing = Math.random() * 2 * Math.PI; // random direction
-  const newLat = Math.asin(
-    Math.sin(lat * Math.PI / 180) * Math.cos(distance / R) +
-    Math.cos(lat * Math.PI / 180) * Math.sin(distance / R) * Math.cos(bearing)
-  );
-  const newLon =
-    lon * Math.PI / 180 +
-    Math.atan2(
-      Math.sin(bearing) * Math.sin(distance / R) * Math.cos(lat * Math.PI / 180),
-      Math.cos(distance / R) - Math.sin(lat * Math.PI / 180) * Math.sin(newLat)
-    );
-  return [newLat * 180 / Math.PI, newLon * 180 / Math.PI];
+// Move marker slightly towards target (speed based on ETA)
+const moveTowards = (current, target, eta) => {
+  const [lat, lon] = current;
+  const [tLat, tLon] = target;
+  const dLat = tLat - lat;
+  const dLon = tLon - lon;
+  const distance = Math.sqrt(dLat * dLat + dLon * dLon);
+
+  if (distance < 0.0001) return target;
+
+  const speed = 0.0005 / (eta || 1); // smaller eta → faster
+  return [lat + (dLat / distance) * speed, lon + (dLon / distance) * speed];
 };
 
 // Delivery person names
@@ -59,10 +56,8 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState(null);
   const [openMapId, setOpenMapId] = useState(null);
-
-  const [orderExtras, setOrderExtras] = useState({}); // stores name, eta, marker for each order
-
-  const coords = [19.0647384721062, 72.8357421770366]; // Fixed location (Mumbai)
+  const [orderExtras, setOrderExtras] = useState({});
+  const coords = [19.0647384721062, 72.8357421770366]; // Fixed location
 
   const fetchOrders = async () => {
     try {
@@ -71,20 +66,35 @@ const UserDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
+
       if (response.ok) {
         setOrders(result.data);
-
-        // Generate extras for each order
         const extras = {};
         result.data.forEach((order) => {
           const randomDistance = 0.5 + Math.random() * 1.5; // 0.5km - 2km
-          const randomName =
-            deliveryPersons[Math.floor(Math.random() * deliveryPersons.length)];
-          const randomETA = Math.floor(Math.random() * 15) + 1; // 1-15 minutes
+          const bearing = Math.random() * 2 * Math.PI;
+          const R = 6378.1;
+          const newLat = Math.asin(
+            Math.sin(coords[0] * Math.PI / 180) * Math.cos(randomDistance / R) +
+              Math.cos(coords[0] * Math.PI / 180) *
+                Math.sin(randomDistance / R) *
+                Math.cos(bearing)
+          );
+          const newLon =
+            coords[1] * Math.PI / 180 +
+            Math.atan2(
+              Math.sin(bearing) *
+                Math.sin(randomDistance / R) *
+                Math.cos(coords[0] * Math.PI / 180),
+              Math.cos(randomDistance / R) -
+                Math.sin(coords[0] * Math.PI / 180) * Math.sin(newLat)
+            );
           extras[order._id] = {
-            marker: getRandomNearbyLocation(coords[0], coords[1], randomDistance),
-            deliveryPerson: randomName,
-            eta: randomETA,
+            marker: [newLat * 180 / Math.PI, newLon * 180 / Math.PI],
+            deliveryPerson:
+              deliveryPersons[Math.floor(Math.random() * deliveryPersons.length)],
+            eta: Math.floor(Math.random() * 15) + 1,
+            reached: false,
           };
         });
         setOrderExtras(extras);
@@ -98,9 +108,33 @@ const UserDashboard = () => {
     }
   };
 
+  // animate markers with speed proportional to ETA
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOrderExtras((prev) => {
+        const updated = { ...prev };
+        for (const id in updated) {
+          if (!updated[id].reached) {
+            const newPos = moveTowards(updated[id].marker, coords, updated[id].eta);
+            const reached = newPos[0] === coords[0] && newPos[1] === coords[1];
+
+            updated[id] = {
+              ...updated[id],
+              marker: reached ? coords : newPos,
+              reached,
+              eta: reached ? 0 : Math.max(0, updated[id].eta - 0.01), // decrease ETA slowly
+            };
+          }
+        }
+        return updated;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     fetchOrders();
-    setLocation('Mumbai, Maharashtra'); // fixed display location
+    setLocation('Mumbai, Maharashtra');
   }, []);
 
   if (loading) {
@@ -117,7 +151,7 @@ const UserDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {orders.map((order) => {
             const extras = orderExtras[order._id] || {};
-            const randomCoords = extras.marker || coords;
+            const isDelivered = extras.reached || order.status === 'delivered';
             return (
               <div
                 key={order._id}
@@ -130,11 +164,9 @@ const UserDashboard = () => {
                   </h2>
 
                   <div
-                    className={`badge badge-${
-                      order.status === 'delivered' ? 'success' : 'info'
-                    } mt-2 capitalize`}
+                    className={`badge badge-${isDelivered ? 'success' : 'primary'} mt-2 capitalize`}
                   >
-                    {order.status}
+                    {isDelivered ? 'delivered' : order.status}
                   </div>
 
                   <div className="mt-4 space-y-2 text-sm">
@@ -165,13 +197,11 @@ const UserDashboard = () => {
                         {extras.deliveryPerson}
                       </p>
                     )}
-                    {extras.eta && (
-                      <p className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span className="font-semibold">ETA:</span>{' '}
-                        {extras.eta} min
-                      </p>
-                    )}
+                    <p className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span className="font-semibold">ETA:</span>{' '}
+                      {extras.reached ? 'Reached' : `${extras.eta.toFixed(1) || '--'} min`}
+                    </p>
                   </div>
 
                   <div className="card-actions mt-4 justify-end">
@@ -186,7 +216,7 @@ const UserDashboard = () => {
                     </button>
                   </div>
 
-                  {openMapId === order._id && (
+                  {openMapId === order._id && extras.marker && (
                     <div className="mt-4 flex justify-center">
                       <div className="w-full max-w-md">
                         <MapContainer
@@ -198,13 +228,17 @@ const UserDashboard = () => {
                           <Marker position={coords} icon={markerIcon}>
                             <Popup>Your Fixed Location</Popup>
                           </Marker>
-                          <Marker position={randomCoords} icon={markerIcon}>
-                            <Popup>
-                              Delivery Person: {extras.deliveryPerson} <br />
-                              ETA: {extras.eta} min
-                            </Popup>
-                          </Marker>
-                          <Polyline positions={[coords, randomCoords]} color="blue" weight={3} />
+                          {!extras.reached && (
+                            <Marker position={extras.marker} icon={markerIcon}>
+                              <Popup>
+                                Delivery Person: {extras.deliveryPerson} <br />
+                                ETA: {extras.eta.toFixed(1)} min
+                              </Popup>
+                            </Marker>
+                          )}
+                          {!extras.reached && (
+                            <Polyline positions={[coords, extras.marker]} color="blue" weight={3} />
+                          )}
                         </MapContainer>
                       </div>
                     </div>
