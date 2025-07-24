@@ -120,7 +120,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .status(200)
-    .json(new ApiResponse(200, "User logged out successfully", null));
+    .json(new ApiResponse(200, null, "User logged out successfully"));
 });
 
 // Refresh Access Token
@@ -167,7 +167,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Password changed successfully", null,));
+    .json(new ApiResponse(200, null, "Password changed successfully"));
 });
 
 // Get Current User
@@ -177,7 +177,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .json(new ApiResponse(200, "Current user fetched successfully", user,));
+    .json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
 export {
