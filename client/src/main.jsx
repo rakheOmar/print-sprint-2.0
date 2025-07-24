@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import ChatBotWidget from './components/ChatBotWidget';
 import { BrowserRouter } from 'react-router-dom'
+import 'leaflet/dist/leaflet.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
