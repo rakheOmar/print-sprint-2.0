@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mic, LocateFixed, ShoppingCart, User, LogOut, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AuthModal from './AuthModal';
@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 const Navbar = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
-  const [location, setLocation] = useState('Bangalore');
+  const [location, setLocation] = useState('Detecting...');
 
   const { user, logout } = useAuth();
 
@@ -32,26 +32,34 @@ const Navbar = () => {
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
+      setLocation('Geolocation unsupported');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-        );
-        const data = await res.json();
-        const city = data?.address?.city || data?.address?.town || data?.address?.village || 'Unknown';
-        setLocation(city);
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data = await res.json();
+          const city = data?.address?.city || data?.address?.town || data?.address?.village || 'Unknown';
+          setLocation(city);
+        } catch (err) {
+          console.error(err);
+          setLocation('Location fetch failed');
+        }
       },
-      (err) => {
-        console.error(err);
-        alert('Unable to retrieve your location');
+      () => {
+        setLocation('Permission denied');
       }
     );
   };
+
+  useEffect(() => {
+    detectLocation();
+  }, []);
 
   return (
     <>
@@ -61,19 +69,9 @@ const Navbar = () => {
           <Link to="/" className="text-2xl font-bold text-primary">PaperSprint</Link>
         </div>
 
-        {/* Location Picker */}
-        <div className="flex items-center gap-2">
-          <select
-            className="select select-bordered select-sm w-40"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          >
-            <option>Bangalore</option>
-            <option>Mumbai</option>
-            <option>Delhi</option>
-            <option>Chennai</option>
-            <option>Kolkata</option>
-          </select>
+        {/* Location Display */}
+        <div className="flex items-center gap-2 text-sm text-gray-50 font-medium">
+          <span className="truncate max-w-[100px]">{location}</span>
           <button className="btn btn-sm btn-ghost" onClick={detectLocation} title="Detect Location">
             <LocateFixed size={18} />
           </button>
