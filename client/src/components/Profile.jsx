@@ -9,26 +9,25 @@ import {
   BadgeInfo,
   CalendarDays,
   ShieldCheck,
-  Hash,
   LogOut,
 } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 const DetailRow = ({ icon: Icon, label, value, link }) => (
-  <p className="flex items-center gap-2 text-lg">
-    <Icon className="w-5 h-5 text-primary" />
+  <p className="flex items-center gap-2 text-xl">
+    <Icon className="w-6 h-6 text-primary" />
     <span className="font-semibold">{label}:</span>
     {link ? (
-      <a href={link} className="link link-primary break-all">{value}</a>
+      <a href={link} className="link link-primary break-all text-base-content">{value}</a>
     ) : (
-      <span className="break-words">{value}</span>
+      <span className="break-words text-base-content">{value}</span>
     )}
   </p>
 );
 
 const UserProfile = ({ userProfile, onLogout }) => (
-  <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
+  <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-8">
     <figure className="px-10 pt-6">
       <div className="avatar">
         <div className="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
@@ -45,23 +44,22 @@ const UserProfile = ({ userProfile, onLogout }) => (
     </figure>
 
     <div className="card-body items-center text-center">
-      <h2 className="card-title text-3xl font-bold mb-4 flex items-center gap-2">
-        <User className="w-6 h-6 text-primary" />
+      <h2 className="card-title text-4xl font-bold mb-6 flex items-center gap-3">
+        <User className="w-7 h-7 text-primary" />
         {userProfile.fullname}
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full text-left">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full text-left">
         <DetailRow icon={Mail} label="Email" value={userProfile.email} link={`mailto:${userProfile.email}`} />
         <DetailRow icon={Phone} label="Phone" value={userProfile.phone} link={`tel:${userProfile.phone}`} />
         <DetailRow icon={ShieldCheck} label="Role" value={userProfile.role} />
         <DetailRow icon={MapPin} label="Address" value={userProfile.address || 'N/A'} />
-        <DetailRow icon={Hash} label="User ID" value={userProfile._id} />
         <DetailRow icon={CalendarDays} label="Created" value={new Date(userProfile.createdAt).toLocaleString()} />
         <DetailRow icon={BadgeInfo} label="Updated" value={new Date(userProfile.updatedAt).toLocaleString()} />
       </div>
 
-      <div className="card-actions mt-6">
-        <button className="btn btn-error text-lg flex items-center gap-2" onClick={onLogout}>
+      <div className="card-actions mt-8">
+        <button className="btn btn-error text-lg px-6 py-2 flex items-center gap-2" onClick={onLogout}>
           <LogOut className="w-5 h-5" /> Logout
         </button>
       </div>
@@ -91,10 +89,10 @@ const ProfilePage = () => {
         });
 
         const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.message || 'Failed to fetch user profile.');
+        if (!response.ok || !result.data) throw new Error(result.message || 'Failed to fetch user profile.');
 
-        setUser(result.message);
-        setUserProfile(result.message);
+        setUser(result.data);
+        setUserProfile(result.data);
       } catch (err) {
         setError(err.message);
         localStorage.removeItem('token');
@@ -121,14 +119,14 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen text-error text-lg">
+      <div className="flex justify-center items-center h-screen text-error text-xl">
         Error: {error}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       {userProfile && <UserProfile userProfile={userProfile} onLogout={handleLogout} />}
     </div>
   );

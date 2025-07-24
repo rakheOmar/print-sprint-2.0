@@ -9,7 +9,7 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-10">
                 {/* Brand + Social */}
                 <div>
-                    <h2 className="text-2xl font-bold text-primary">PaperSprint</h2>
+                    <h2 className="text-2xl font-bold text-primary">PaperSprint.</h2>
                     <p className="mt-2 text-sm">Your ideas, printed to perfection.</p>
                     <div className="flex space-x-4 mt-4 text-lg">
                         <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">

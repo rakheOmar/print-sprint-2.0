@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react'; // Assuming lucide-react is installed
 
 const ChatBotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Hi! How can I help you today?' },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
+
+  const flaskApiUrl = 'http://localhost:5000'; // Your Flask backend URL
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -17,74 +18,157 @@ const ChatBotWidget = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
+  // Fetch welcome message when the widget is opened for the first time
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setLoading(true); // Set loading state for initial fetch
+      fetch(`${flaskApiUrl}/welcome`)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setMessages([
+            { from: 'bot', text: data.response },
+            { from: 'bot', text: 'Hi! How can I help you today?' }
+          ]);
+        })
+        .catch((error) => {
+          console.error("Error fetching welcome message:", error);
+          setMessages([
+            { from: 'bot', text: 'Welcome to PaperSprint! (Failed to connect to backend, using default message)' },
+            { from: 'bot', text: 'Hi! How can I help you today?' }
+          ]);
+        })
+        .finally(() => {
+          setLoading(false); // Clear loading state
+        });
+    }
+  }, [isOpen, messages.length]); // Depend on isOpen and messages.length to trigger only once
+
+  const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    // Append user message
+    // Add user message to state
     setMessages((prev) => [...prev, { from: 'user', text: trimmed }]);
-    setInput('');
+    setInput(''); // Clear input
+    setLoading(true); // Set loading state
 
-    // Simulate bot reply
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${flaskApiUrl}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+
+      // Add bot response to state
       setMessages((prev) => [
         ...prev,
-        { from: 'bot', text: 'Thanks for your message. We\'ll assist you shortly!' },
+        { from: 'bot', text: data.response || 'No response from AI' },
       ]);
-    }, 500);
+    } catch (err) {
+      console.error("Error sending message to AI:", err);
+      setMessages((prev) => [
+        ...prev,
+        { from: 'bot', text: 'Failed to connect to AI server. Please try again later.' },
+      ]);
+    } finally {
+      setLoading(false); // Clear loading state
+    }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSend();
+    if (e.key === 'Enter' && !loading) { // Prevent sending multiple messages while loading
+      handleSend();
+    }
   };
 
   return (
-    <>
+    // Tailwind CSS classes for responsive design and aesthetics
+    <div className="font-inter">
       {/* Toggle Button */}
       <button
-        className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-md hover:scale-105 transition z-50"
+        className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 z-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Chatbot"
+        aria-label="Toggle Chatbot"
       >
         <MessageCircle className="w-6 h-6" />
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 max-w-[90%] h-[500px] bg-base-100 rounded-xl shadow-xl z-50 flex flex-col overflow-hidden">
-          <div className="bg-primary text-white px-4 py-2 flex justify-between items-center">
-            <span className="font-semibold">PrintSprint AI</span>
-            <button onClick={() => setIsOpen(false)} className="text-white text-xl leading-none">&times;</button>
+        <div className="fixed bottom-24 right-6 w-96 max-w-[90%] h-[500px] bg-gray-800 rounded-lg shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-700">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white px-4 py-3 flex justify-between items-center shadow-md rounded-t-lg">
+            <span className="font-semibold text-lg">PaperSprint AI</span>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-white text-2xl leading-none hover:text-gray-200 transition-colors focus:outline-none"
+              aria-label="Close Chat"
+            >
+              &times;
+            </button>
           </div>
 
-          <div className="flex-1 p-3 space-y-2 overflow-y-auto text-sm">
+          {/* Messages Display Area */}
+          <div className="flex-1 p-4 space-y-3 overflow-y-auto text-sm bg-gray-900 custom-scrollbar">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`chat ${msg.from === 'user' ? 'chat-end' : 'chat-start'}`}
+                className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`chat-bubble ${msg.from === 'user' ? 'chat-bubble-primary' : 'chat-bubble-accent'}`}>
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg shadow-md ${msg.from === 'user'
+                      ? 'bg-blue-600 text-white rounded-br-none'
+                      : 'bg-gray-700 text-gray-100 rounded-bl-none'
+                    }`}
+                >
                   {msg.text}
                 </div>
               </div>
             ))}
-            <div ref={chatEndRef} />
+            {loading && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg shadow-md bg-gray-700 text-gray-100 rounded-bl-none">
+                  <div className="flex items-center">
+                    <span className="animate-pulse mr-2">...</span> Thinking
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} /> {/* Scroll target */}
           </div>
 
-          <div className="flex items-center border-t p-2 bg-base-200">
+          {/* Message Input Area */}
+          <div className="flex items-center border-t border-gray-700 p-3 bg-gray-800">
             <input
               type="text"
               placeholder="Type a message..."
-              className="input input-sm w-full"
+              className="flex-1 p-3 rounded-l-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
+              disabled={loading}
             />
-            <button onClick={handleSend} className="btn btn-sm btn-primary ml-2">Send</button>
+            <button
+              onClick={handleSend}
+              className="ml-2 px-5 py-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              Send
+            </button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

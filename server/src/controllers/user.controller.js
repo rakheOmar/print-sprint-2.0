@@ -177,7 +177,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .json(new ApiResponse(200, "Current user fetched successfully", user,));
+    .json(new ApiResponse(200, "Current user fetched successfully", user));
 });
 
 export {

@@ -28,7 +28,7 @@ function Card() {
   return (
     <section className="py-16 px-6 bg-base-100 text-base-content" id="about-us-section">
       <div className="text-center mb-12 max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">About PaperSprint</h1>
+        <h1 className="text-4xl font-bold mb-4">About PaperSprint.</h1>
         <p className="text-lg">
           Your trusted partner for all your printing needs. We combine cutting-edge technology with
           a commitment to excellence to deliver outstanding results, every single time.

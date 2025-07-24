@@ -40,19 +40,50 @@ const Navbar = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const res = await fetch(
+          const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
           );
-          const data = await res.json();
-          const city = data?.address?.city || data?.address?.town || data?.address?.village || 'Unknown';
-          setLocation(city);
+          const data = await response.json();
+
+          const address = data.address || {};
+          const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.hamlet ||
+            address.county ||
+            address.state_district ||
+            address.state ||
+            address.country ||
+            data.display_name ||
+            'Unknown';
+            let neighbourhood = address.neighbourhood + ', ' + city;
+          setLocation(neighbourhood);
         } catch (err) {
-          console.error(err);
+          console.error('Failed to fetch location data:', err);
           setLocation('Location fetch failed');
         }
       },
-      () => {
-        setLocation('Permission denied');
+      (error) => {
+        console.error('Geolocation error:', error);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocation('Permission denied');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocation('Location unavailable');
+            break;
+          case error.TIMEOUT:
+            setLocation('Location request timed out');
+            break;
+          default:
+            setLocation('Geolocation error');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
       }
     );
   };
@@ -66,12 +97,12 @@ const Navbar = () => {
       <div className="navbar bg-base-100 shadow-md px-4 md:px-10 sticky top-0 z-50">
         {/* Logo */}
         <div className="flex-1">
-          <Link to="/" className="text-2xl font-bold text-primary">PaperSprint</Link>
+          <Link to="/" className="text-2xl font-bold text-gray-50">PaperSprint.</Link>
         </div>
 
         {/* Location Display */}
         <div className="flex items-center gap-2 text-sm text-gray-50 font-medium">
-          <span className="truncate max-w-[100px]">{location}</span>
+          <span className="truncate max-w-[500px]">{location}</span>
           <button className="btn btn-sm btn-ghost" onClick={detectLocation} title="Detect Location">
             <LocateFixed size={18} />
           </button>
