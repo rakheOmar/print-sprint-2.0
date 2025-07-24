@@ -1,12 +1,12 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
+import axios from "axios";
 import { Order } from "../models/order.model.js";
 import { Document } from "../models/document.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { sendSMS } from "../utils/twilio.js";
+import { sendOrderEmail } from "../utils/emailService.js";
 
-// Place Order
-const createOrder = asyncHandler(async (req, res) => {
+ const createOrder = asyncHandler(async (req, res) => {
   const {
     documentIds,
     deliveryAddress,
@@ -44,23 +44,32 @@ const createOrder = asyncHandler(async (req, res) => {
     status: "ordered",
   });
 
-  await sendSMS(
-    customerPhone,
-    `📦 Order Placed! Hello ${customerName}, your order for ${documents.length} document(s) has been placed successfully. Total: ₹${totalAmount}.`
-  );
+  try {
+    await sendOrderEmail({
+      to_email: customerEmail,
+      customerName,
+      orderId: order._id.toString(),
+      totalAmount,
+    });
+    console.log("Order email sent successfully");
+  } catch (err) {
+    console.error("Email sending failed:", err.message);
+  }
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Order placed successfully", order,));
+    .json(new ApiResponse(201, "Order placed successfully", order));
 });
 
 // Get orders
 const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
-    .populate("document") 
+    .populate("document")
     .sort({ createdAt: -1 });
 
-  return res.status(200).json(new ApiResponse(200, "Orders retrieved successfully", orders));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Orders retrieved successfully", orders));
 });
 
 // Cancel Order
@@ -86,7 +95,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200,  "Order cancelled successfully", order));
+    .json(new ApiResponse(200, "Order cancelled successfully", order));
 });
 
 export { createOrder, getMyOrders, cancelOrder };

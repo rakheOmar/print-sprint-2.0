@@ -11,6 +11,7 @@ import Footer from './components/Footer.jsx';
 import UserDashboard from './components/OrderDashboard.jsx';
 import CourierDashboard from './components/CourierDashboard.jsx';
 import ProfilePage from './components/Profile.jsx';
+import PaymentButton from './components/PaymentButton.jsx';
 
 import './App.css';
 
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/partner-with-us" element={<PartnerWithUsPage />} />
           <Route path="/order-dashboard" element={<UserDashboard />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/payment" element={<PaymentButton amount={199} />} />
           <Route path="/courier-dashboard" element={<><Navbar /><CourierDashboard /><Footer /></>} />
         </Routes>
       </main>

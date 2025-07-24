@@ -91,18 +91,18 @@ function PartnerWithUsPage() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-4xl font-bold">
-          print <span className="text-primary">sprint</span> partners
+          Paper<span className="text-primary">sprint.</span> partners
         </h2>
         <p className="text-lg max-w-xl mx-auto">
           Accelerate your business journey with us—where ambition turns into action and results.
         </p>
-        <button className="btn btn-primary">Register Now</button>
+        {/* <button className="btn btn-primary">Register Now</button> */}
       </div>
 
       {/* Intro */}
       <div className="text-center space-y-2">
-        <h3 className="text-2xl font-semibold">What is the Print Sprint Partner Program?</h3>
-        <p>Become a local business hero: launch your own Print Sprint store and join the new wave of growth!</p>
+        <h3 className="text-2xl font-semibold">What is the Papersprint Partner Program?</h3>
+        <p>Become a local business hero: launch your own Papersprint store and join the new wave of growth!</p>
       </div>
 
       {/* Magic Steps */}
@@ -123,7 +123,7 @@ function PartnerWithUsPage() {
       {/* Benefits */}
       <div className="space-y-4">
         <h3 className="text-2xl font-semibold text-center">What do you gain?</h3>
-        <p className="text-center">Unlock powerful advantages as a Print Sprint partner</p>
+        <p className="text-center">Unlock powerful advantages as a Papersprint partner</p>
         <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
           {benefitsList.map((benefit, index) => (
             <div key={index} className="card bg-base-100 shadow-md p-4 space-y-3 items-center text-center">

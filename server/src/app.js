@@ -34,6 +34,7 @@ import documentRoutes from "./routes/document.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import courierRoutes from "./routes/courier.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 
 // ROUTES DECLARATION
@@ -42,5 +43,7 @@ app.use("/api/v1/documents", documentRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/courier", courierRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/payment", paymentRoutes);
+
 
 export { app };

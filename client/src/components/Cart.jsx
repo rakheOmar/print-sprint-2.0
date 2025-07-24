@@ -8,6 +8,7 @@ import {
   Upload,
   CheckCircle
 } from 'lucide-react';
+import PaymentButton from '../components/PaymentButton';
 
 export default function CartPage() {
   const [documents, setDocuments] = useState([]);
@@ -17,6 +18,7 @@ export default function CartPage() {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [paymentType, setPaymentType] = useState('cash');
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -102,16 +104,15 @@ export default function CartPage() {
       return;
     }
 
-    setPlacingOrder(true); // Set placing order state
+    setPlacingOrder(true);
     try {
-      // TODO: Replace with actual UI form data later
       const orderDetails = {
         documentIds,
         deliveryAddress: "123 Main Street, Bangalore",
         customerName: "Omar Rakhe",
         customerPhone: "9876543210",
         customerEmail: "omar@example.com",
-        paymentType: "cash"
+        paymentType
       };
 
       const response = await fetch('http://localhost:8000/api/v1/orders/', {
@@ -142,26 +143,23 @@ export default function CartPage() {
       console.log("✅ Order placed:", result);
 
       localStorage.setItem('documentIds', '[]');
-      setOrderPlaced(true); // Set order placed state to true
-      // No alert here, rely on the visual success message
+      setOrderPlaced(true);
       setTimeout(() => {
-        window.location.href = '/'; // Redirect after a short delay
-      }, 2000); // Redirect after 2 seconds
+        window.location.href = '/';
+      }, 2000);
     } catch (err) {
       console.error("❌ Unexpected error placing order:", err);
       alert("Unexpected error placing order.");
     } finally {
-      setPlacingOrder(false); // Reset placing order state
+      setPlacingOrder(false);
     }
   };
 
-
   const calculatePrice = () => {
-    const pricePerPage = 2; // example pricing logic
+    const pricePerPage = 2;
     return totalPages * pricePerPage;
   };
 
-  // Conditional rendering for empty cart vs. full cart
   if (!loading && !error && documents.length === 0) {
     return (
       <div className="min-h-screen bg-base-200 p-6 flex flex-col justify-center items-center">
@@ -179,7 +177,6 @@ export default function CartPage() {
     );
   }
 
-  // Render full cart if not empty and not loading/error
   return (
     <div className="min-h-screen bg-base-200 p-6 flex justify-center items-start">
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -200,7 +197,6 @@ export default function CartPage() {
             </div>
           )}
 
-          {/* This part will now only render if documents.length > 0 */}
           <div className="space-y-5 mb-6">
             {documents.map(doc => (
               <div key={doc._id} className="card bg-base-100 shadow-md border border-base-300">
@@ -246,50 +242,63 @@ export default function CartPage() {
           </div>
         </div>
 
-        {/* Order Summary */}
-        {!loading && documents.length > 0 && ( // Ensure this only shows when cart has items
-          <div className="bg-base-100 shadow-lg rounded-box p-6 flex flex-col gap-4 self-start mt-2">
-            <h2 className="text-xl font-bold border-b pb-2">Order Summary</h2>
-            <div className="flex justify-between">
-              <span>Total Documents</span>
-              <span className="font-semibold">{totalDocuments}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Total Pages</span>
-              <span className="font-semibold">{totalPages}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Price (₹2/page)</span>
-              <span className="font-semibold">₹{calculatePrice()}</span>
-            </div>
+        <div className="bg-base-100 shadow-lg rounded-box p-6 flex flex-col gap-4 self-start mt-2">
+          <h2 className="text-xl font-bold border-b pb-2">Order Summary</h2>
+          <div className="flex justify-between">
+            <span>Total Documents</span>
+            <span className="font-semibold">{totalDocuments}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Total Pages</span>
+            <span className="font-semibold">{totalPages}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Price (₹2/page)</span>
+            <span className="font-semibold">₹{calculatePrice()}</span>
+          </div>
+
+          <div className="mt-4">
+            <label className="label text-sm font-medium text-gray-700 mb-1">
+              Payment Method
+            </label>
+            <select
+              className="select select-bordered w-full mb-4"
+              value={paymentType}
+              onChange={(e) => setPaymentType(e.target.value)}
+            >
+              <option value="cash">Cash on Delivery</option>
+              <option value="online">Online Payment</option>
+            </select>
 
             {orderPlaced ? (
-              <div className="alert alert-success flex items-center gap-2 mt-2">
+              <div className="alert alert-success flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" />
                 Order Placed Successfully!
               </div>
-            ) : (
+            ) : paymentType === 'cash' ? (
               <button
-                className={`btn btn-primary w-full mt-4 ${placingOrder ? 'btn-disabled' : ''}`}
+                className={`btn btn-primary w-full ${placingOrder ? 'btn-disabled' : ''}`}
                 onClick={handlePlaceOrder}
                 disabled={placingOrder}
               >
                 {placingOrder ? 'Placing Order...' : 'Place Order'}
               </button>
+            ) : (
+              <PaymentButton amount={calculatePrice()} />
             )}
-
-            <button
-              onClick={() => (window.location.href = '/')}
-              className="btn btn-outline w-full"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
-            </button>
-
-            <button onClick={handleClearCart} className="btn btn-error w-full">
-              <Trash2 className="w-4 h-4 mr-2" /> Clear Cart
-            </button>
           </div>
-        )}
+
+          <button
+            onClick={() => (window.location.href = '/')}
+            className="btn btn-outline w-full"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+          </button>
+
+          <button onClick={handleClearCart} className="btn btn-error w-full">
+            <Trash2 className="w-4 h-4 mr-2" /> Clear Cart
+          </button>
+        </div>
       </div>
     </div>
   );
