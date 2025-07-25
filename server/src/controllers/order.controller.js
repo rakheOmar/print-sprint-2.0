@@ -6,7 +6,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendOrderEmail } from "../utils/emailService.js";
 
- const createOrder = asyncHandler(async (req, res) => {
+// Create a new order
+const createOrder = asyncHandler(async (req, res) => {
   const {
     documentIds,
     deliveryAddress,
@@ -61,10 +62,10 @@ import { sendOrderEmail } from "../utils/emailService.js";
     .json(new ApiResponse(201, "Order placed successfully", order));
 });
 
-// Get orders
+// Get orders for the logged-in user
 const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id })
-    .populate("document")
+    .populate("documents")
     .sort({ createdAt: -1 });
 
   return res
@@ -72,7 +73,20 @@ const getMyOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Orders retrieved successfully", orders));
 });
 
-// Cancel Order
+// Get all orders (Admin only)
+const getAllOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({})
+    .populate("documents")
+    .populate("user", "fullname email")
+    .populate("assignedCourier", "fullname email")
+    .sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "All orders retrieved successfully", orders));
+});
+
+// Cancel an order
 const cancelOrder = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
 
@@ -98,4 +112,4 @@ const cancelOrder = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Order cancelled successfully", order));
 });
 
-export { createOrder, getMyOrders, cancelOrder };
+export { createOrder, getMyOrders, getAllOrders, cancelOrder };

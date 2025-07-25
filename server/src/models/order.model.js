@@ -36,7 +36,7 @@ const orderSchema = new Schema(
       ref: "User",
       default: null,
     },
-    document: [
+    documents: [
       {
         type: Schema.Types.ObjectId,
         ref: "Document",

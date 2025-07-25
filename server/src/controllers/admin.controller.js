@@ -27,4 +27,14 @@ const promoteToCourier = asyncHandler(async (req, res) => {
   });
 });
 
-export { promoteToCourier };
+// Get all users
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({}, "-password -refreshToken"); // exclude sensitive info
+  res.status(200).json({
+    success: true,
+    count: users.length,
+    users,
+  });
+});
+
+export { promoteToCourier, getAllUsers };

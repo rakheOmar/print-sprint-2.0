@@ -37,18 +37,10 @@ const PrivacyPolicy = () => {
               We collect different types of information to provide and improve our services to you:
             </p>
             <ul className="list-disc list-inside space-y-3 text-gray-300 leading-relaxed pl-4">
-              <li>
-                <strong className="text-white">Personal Information:</strong> This includes information you directly provide to us, such as your name, email address, phone number, shipping address, and payment details when you create an account, place an order, or contact us.
-              </li>
-              <li>
-                <strong className="text-white">Document Data:</strong> When you upload documents for printing, these files are temporarily stored on our secure servers. We process these files solely for the purpose of fulfilling your print order.
-              </li>
-              <li>
-                <strong className="text-white">Usage Data:</strong> We automatically collect information on how the service is accessed and used. This "Usage Data" may include your computer's IP address, browser type, browser version, the pages of our Service that you visit, the time and date of your visit, the time spent on those pages, unique device identifiers, and other diagnostic data.
-              </li>
-              <li>
-                <strong className="text-white">Transaction Data:</strong> Details about the products and services you have purchased from us.
-              </li>
+              <li><strong className="text-white">Personal Information:</strong> Name, email, phone number, shipping address, and payment details.</li>
+              <li><strong className="text-white">Document Data:</strong> Uploaded files for printing, temporarily stored securely until order completion.</li>
+              <li><strong className="text-white">Usage Data:</strong> IP address, browser type, visited pages, and device info.</li>
+              <li><strong className="text-white">Transaction Data:</strong> Order details and related payment information.</li>
             </ul>
           </section>
 
@@ -62,13 +54,11 @@ const PrivacyPolicy = () => {
             </p>
             <ul className="list-disc list-inside space-y-3 text-gray-300 leading-relaxed pl-4">
               <li>To provide and maintain our Service.</li>
-              <li>To process your print orders and transactions.</li>
-              <li>To manage your account and provide customer support.</li>
-              <li>To notify you about changes to our Service.</li>
-              <li>To allow you to participate in interactive features of our Service when you choose to do so.</li>
-              <li>To monitor the usage of our Service.</li>
-              <li>To detect, prevent, and address technical issues.</li>
-              <li>To provide you with news, special offers, and general information about other goods, services, and events which we offer that are similar to those that you have already purchased or enquired about, unless you have opted not to receive such information.</li>
+              <li>To process orders and transactions.</li>
+              <li>To manage accounts and provide customer support.</li>
+              <li>To notify about service changes and offers.</li>
+              <li>To monitor usage and improve services.</li>
+              <li>To detect and prevent technical issues.</li>
             </ul>
           </section>
 
@@ -78,10 +68,7 @@ const PrivacyPolicy = () => {
               <Lock className="text-blue-400 w-8 h-8" /> Data Retention
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              Papersprint will retain your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-base mt-4">
-              <strong className="text-white">Regarding Document Data:</strong> Uploaded documents are typically deleted from our servers within <span className="text-yellow-300">[e.g., 7 days, 30 days, upon order completion and successful delivery]</span> after your print order is fulfilled. This is done to ensure your privacy.
+              Papersprint retains personal data only as long as necessary for services or legal compliance. Uploaded documents are deleted <span className="text-yellow-300">within 7 days of order completion</span> to ensure privacy.
             </p>
           </section>
 
@@ -90,22 +77,14 @@ const PrivacyPolicy = () => {
             <h2 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
               <Shield className="text-blue-400 w-8 h-8" /> Disclosure of Data
             </h2>
-            <p className="text-gray-300 leading-relaxed text-base mb-6">
-              Your information, including Personal Data, may be transferred to — and maintained on — computers located outside of your state, province, country, or other governmental jurisdiction where the data protection laws may differ than those from your jurisdiction.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-base mt-4">
-              We may disclose your Personal Data in the good faith belief that such action is necessary to:
+            <p className="text-gray-300 leading-relaxed text-base">
+              Your data may be disclosed to trusted partners or if legally required, but we never sell your personal information. Disclosures happen only to:
             </p>
             <ul className="list-disc list-inside space-y-3 text-gray-300 leading-relaxed pl-4 mt-4">
-              <li>Comply with a legal obligation.</li>
-              <li>Protect and defend the rights or property of Papersprint.</li>
-              <li>Prevent or investigate possible wrongdoing in connection with the Service.</li>
-              <li>Protect the personal safety of users of the Service or the public.</li>
-              <li>Protect against legal liability.</li>
+              <li>Comply with legal obligations.</li>
+              <li>Protect and defend rights or property.</li>
+              <li>Ensure service security and prevent fraud.</li>
             </ul>
-            <p className="text-gray-300 leading-relaxed text-base mt-4">
-              We do not sell, trade, or otherwise transfer to outside parties your Personally Identifiable Information unless we provide you with advance notice. This does not include website hosting partners and other parties who assist us in operating our website, conducting our business, or serving our users, so long as those parties agree to keep this information confidential.
-            </p>
           </section>
 
           {/* 6. Security of Data */}
@@ -114,41 +93,28 @@ const PrivacyPolicy = () => {
               <Lock className="text-blue-400 w-8 h-8" /> Security of Data
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security. We implement a variety of security measures to maintain the safety of your personal information when you place an order or enter, submit, or access your personal information.
+              While no system is 100% secure, we use strong encryption and industry practices to protect your data from unauthorized access or disclosure.
             </p>
           </section>
 
-          {/* 7. Your Data Protection Rights */}
+          {/* 7. Data Protection Rights */}
           <section className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 animate-fade-in-up delay-600">
             <h2 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
               <User className="text-blue-400 w-8 h-8" /> Your Data Protection Rights
             </h2>
-            <p className="text-gray-300 leading-relaxed text-base mb-4">
-              Depending on your location, you may have the following data protection rights:
+            <p className="text-gray-300 leading-relaxed text-base">
+              Depending on your location, you may have the right to access, correct, or delete your personal data, as well as withdraw consent. For requests, contact:
             </p>
-            <ul className="list-disc list-inside space-y-3 text-gray-300 leading-relaxed pl-4">
-              <li>The right to access, update or to delete the information we have on you.</li>
-              <li>The right of rectification.</li>
-              <li>The right to object.</li>
-              <li>The right of restriction.</li>
-              <li>The right to data portability.</li>
-              <li>The right to withdraw consent.</li>
-            </ul>
-            <p className="text-gray-300 leading-relaxed text-base mt-4">
-              If you wish to exercise any of these rights, please contact us at <a href="mailto:[Your Support Email]" className="text-blue-400 hover:underline">[Your Support Email]</a>.
-            </p>
+            <p className="text-blue-400 mt-2">support@papersprint.com</p>
           </section>
 
-          {/* 8. Cookies and Tracking Technologies */}
+          {/* 8. Cookies */}
           <section className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 animate-fade-in-up delay-700">
             <h2 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
               <Cookie className="text-blue-400 w-8 h-8" /> Cookies
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              We use cookies and similar tracking technologies to track the activity on our Service and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier. Cookies are sent to your browser from a website and stored on your device. Other tracking technologies are also used such as beacons, tags, and scripts to collect and track information and to improve and analyze our Service.
-            </p>
-            <p className="text-gray-300 leading-relaxed text-base mt-4">
-              You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Service.
+              We use cookies to track user activity and improve the experience. You can disable cookies in browser settings, but some features may not work properly.
             </p>
           </section>
 
@@ -158,7 +124,7 @@ const PrivacyPolicy = () => {
               <BookOpen className="text-blue-400 w-8 h-8" /> Links to Other Sites
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              Our Service may contain links to other sites that are not operated by us. If you click on a third-party link, you will be directed to that third party's site. We strongly advise you to review the Privacy Policy of every site you visit. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
+              Our site may link to third-party websites. We are not responsible for their privacy policies or content. Please review each site's privacy practices.
             </p>
           </section>
 
@@ -168,22 +134,22 @@ const PrivacyPolicy = () => {
               <User className="text-blue-400 w-8 h-8" /> Children's Privacy
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              Our Service does not address anyone under the age of 18 ("Children"). We do not knowingly collect personally identifiable information from anyone under the age of 18. If you are a parent or guardian and you are aware that your Children has provided us with Personal Data, please contact us. If we become aware that we have collected Personal Data from children without verification of parental consent, we take steps to remove that information from our servers.
+              Our services are not directed to anyone under 18. We do not knowingly collect data from minors. Contact us if you believe we hold such information.
             </p>
           </section>
 
-          {/* 11. Changes to This Privacy Policy */}
+          {/* 11. Changes to Policy */}
           <section className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 animate-fade-in-up delay-1000">
             <h2 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
               <BookOpen className="text-blue-400 w-8 h-8" /> Changes to This Privacy Policy
             </h2>
             <p className="text-gray-300 leading-relaxed text-base">
-              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. We will let you know via email and/or a prominent notice on our Service, prior to the change becoming effective and update the "effective date" at the top of this Privacy Policy. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
+              We may update this policy and notify users via email or site notices. Please review periodically for changes.
             </p>
           </section>
 
           {/* 12. Contact Us */}
-          {/* <section className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 animate-fade-in-up delay-1100">
+          <section className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 animate-fade-in-up delay-1100">
             <h2 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
               <Mail className="text-blue-400 w-8 h-8" /> Contact Us
             </h2>
@@ -191,11 +157,11 @@ const PrivacyPolicy = () => {
               If you have any questions about this Privacy Policy, please contact us:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-300 leading-relaxed pl-4 mt-4">
-              <li>By email: <a href="mailto:[Your Support Email]" className="text-blue-400 hover:underline">[Your Support Email]</a></li>
-              <li>By visiting this page on our website: <a href="[Your Contact Us Page URL]" className="text-blue-400 hover:underline">[Your Contact Us Page URL]</a></li>
-              <li>By phone number: <span className="text-blue-400">[Your Phone Number, optional]</span></li>
+              <li>Email: <a href="mailto:support@papersprint.com" className="text-blue-400 hover:underline">support@papersprint.com</a></li>
+              <li>Contact Page: <a href="/contact-us" className="text-blue-400 hover:underline">Contact Us</a></li>
+              <li>Phone: <span className="text-blue-400">+91-9876543210</span></li>
             </ul>
-          </section> */}
+          </section>
 
         </div>
 
@@ -205,15 +171,13 @@ const PrivacyPolicy = () => {
         </p>
       </div>
 
-      {/* Custom CSS for animations (can be moved to global CSS if preferred) */}
+      {/* Animation Styles */}
       <style jsx>{`
         @keyframes fade-in-up {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }

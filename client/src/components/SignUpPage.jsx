@@ -9,6 +9,7 @@ function SignUpPage() {
   const [avatar, setAvatar] = useState(null);
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
+  const [role, setRole] = useState('user'); // <--- default role
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -50,6 +51,7 @@ function SignUpPage() {
     formData.append('address', address);
     formData.append('phone', phone);
     formData.append('avatar', avatar);
+    formData.append('role', role); // <--- send role
 
     try {
       const response = await axios.post('http://localhost:8000/api/v1/users/register', formData, {
@@ -101,6 +103,12 @@ function SignUpPage() {
           <input type="file" accept="image/*" className="file-input file-input-bordered w-full" onChange={(e) => setAvatar(e.target.files[0])} required disabled={loading} />
           <input type="text" placeholder="Address (Optional)" className="input input-bordered w-full" value={address} onChange={(e) => setAddress(e.target.value)} disabled={loading} />
           <input type="tel" placeholder="Phone (Optional)" className="input input-bordered w-full" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={loading} />
+
+          {/* Role Selection */}
+          <select className="select select-bordered w-full" value={role} onChange={(e) => setRole(e.target.value)} disabled={loading}>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
 
           {error && <div className="text-red-500 text-sm">{error}</div>}
 
