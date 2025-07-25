@@ -1,27 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react'; // Assuming lucide-react is installed
+import React, { useState, useRef, useEffect } from "react";
+import { MessageCircle } from "lucide-react";
+import Linkify from "react-linkify";
 
 const ChatBotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
-  const flaskApiUrl = 'http://localhost:5000'; // Your Flask backend URL
+  const flaskApiUrl = "http://localhost:5000"; // Flask backend URL
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Fetch welcome message when the widget is opened for the first time
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      setLoading(true); // Set loading state for initial fetch
+      setLoading(true);
       fetch(`${flaskApiUrl}/welcome`)
         .then((res) => {
           if (!res.ok) {
@@ -31,36 +31,38 @@ const ChatBotWidget = () => {
         })
         .then((data) => {
           setMessages([
-            { from: 'bot', text: data.response },
-            { from: 'bot', text: 'Hi! How can I help you today?' }
+            { from: "bot", text: data.response },
+            { from: "bot", text: "Hi! How can I help you today?" },
           ]);
         })
         .catch((error) => {
           console.error("Error fetching welcome message:", error);
           setMessages([
-            { from: 'bot', text: 'Welcome to PaperSprint! (Failed to connect to backend, using default message)' },
-            { from: 'bot', text: 'Hi! How can I help you today?' }
+            {
+              from: "bot",
+              text: "Welcome to PaperSprint! (Failed to connect to backend, using default message)",
+            },
+            { from: "bot", text: "Hi! How can I help you today?" },
           ]);
         })
         .finally(() => {
-          setLoading(false); // Clear loading state
+          setLoading(false);
         });
     }
-  }, [isOpen, messages.length]); // Depend on isOpen and messages.length to trigger only once
+  }, [isOpen, messages.length]);
 
   const handleSend = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    // Add user message to state
-    setMessages((prev) => [...prev, { from: 'user', text: trimmed }]);
-    setInput(''); // Clear input
-    setLoading(true); // Set loading state
+    setMessages((prev) => [...prev, { from: "user", text: trimmed }]);
+    setInput("");
+    setLoading(true);
 
     try {
       const res = await fetch(`${flaskApiUrl}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: trimmed }),
       });
 
@@ -69,30 +71,42 @@ const ChatBotWidget = () => {
       }
       const data = await res.json();
 
-      // Add bot response to state
       setMessages((prev) => [
         ...prev,
-        { from: 'bot', text: data.response || 'No response from AI' },
+        { from: "bot", text: data.response || "No response from AI" },
       ]);
     } catch (err) {
       console.error("Error sending message to AI:", err);
       setMessages((prev) => [
         ...prev,
-        { from: 'bot', text: 'Failed to connect to AI server. Please try again later.' },
+        {
+          from: "bot",
+          text: "Failed to connect to AI server. Please try again later.",
+        },
       ]);
     } finally {
-      setLoading(false); // Clear loading state
+      setLoading(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !loading) { // Prevent sending multiple messages while loading
+    if (e.key === "Enter" && !loading) {
       handleSend();
     }
   };
 
+  // Link decorator for styling links
+  const linkDecorator = (decoratedHref, decoratedText, key) => (
+    <a
+      href={decoratedHref}
+      key={key}
+      className="text-blue-400 underline hover:text-blue-300"
+    >
+      {decoratedText}
+    </a>
+  );
+
   return (
-    // Tailwind CSS classes for responsive design and aesthetics
     <div className="font-inter">
       {/* Toggle Button */}
       <button
@@ -123,15 +137,18 @@ const ChatBotWidget = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg shadow-md ${msg.from === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-none'
-                      : 'bg-gray-700 text-gray-100 rounded-bl-none'
-                    }`}
+                  className={`max-w-[80%] p-3 rounded-lg shadow-md ${
+                    msg.from === "user"
+                      ? "bg-blue-600 text-white rounded-br-none"
+                      : "bg-gray-700 text-gray-100 rounded-bl-none"
+                  }`}
                 >
-                  {msg.text}
+                  <Linkify componentDecorator={linkDecorator}>
+                    {msg.text}
+                  </Linkify>
                 </div>
               </div>
             ))}
@@ -144,7 +161,7 @@ const ChatBotWidget = () => {
                 </div>
               </div>
             )}
-            <div ref={chatEndRef} /> {/* Scroll target */}
+            <div ref={chatEndRef} />
           </div>
 
           {/* Message Input Area */}

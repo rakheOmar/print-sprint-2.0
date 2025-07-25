@@ -19,6 +19,7 @@ import CareerPage from "./components/CareerPage.jsx";
 import BlogPage from "./components/BlogPage.jsx";
 import AdminPanel from "./components/AdminPanel.jsx";
 import PrivacyPolicy from "./components/PrivacyPolicy.jsx";
+import PartnerDashboard from "./components/PartnerDashboard.jsx";
 import "./App.css";
 
 const ScrollToTop = () => {
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="/payment" element={<PaymentButton amount={199} />} />
           <Route path="/courier-dashboard" element={<CourierDashboard />} />
           <Route path="/admin-panel" element={<AdminPanel />} />
+          <Route path="/partner/dashboard" element={<PartnerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

@@ -8,83 +8,50 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Fetch users
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get("http://localhost:8000/api/v1/admin/users", {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
       setUsers(res.data?.users || []);
     } catch (error) {
-      console.error(
-        "Error fetching users:",
-        error.response?.data || error.message
-      );
-      setErrorMsg(
-        error.response?.data?.message ||
-          `Failed to fetch users (Status: ${error.response?.status || "Network"})`
-      );
+      setErrorMsg(error.response?.data?.message || "Failed to fetch users");
       setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Promote user to courier
   const promoteToCourier = async (id) => {
     if (!window.confirm("Promote this user to courier?")) return;
-
     try {
       const token = localStorage.getItem("token");
       const res = await axios.patch(
         `http://localhost:8000/api/v1/admin/users/${id}/promote`,
         {},
-        {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+        { headers: { Authorization: token ? `Bearer ${token}` : "" } }
       );
-
       alert(res.data?.message || "User promoted successfully");
       setUsers((prev) =>
         prev.map((u) => (u._id === id ? { ...u, role: "courier" } : u))
       );
     } catch (error) {
-      console.error(
-        "Error promoting user:",
-        error.response?.data || error.message
-      );
       alert(error.response?.data?.message || "Failed to promote user");
     }
   };
 
-  // Fetch all orders (Admin)
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
         "http://localhost:8000/api/v1/orders/all",
         {},
-        {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+        { headers: { Authorization: token ? `Bearer ${token}` : "" } }
       );
       setOrders(res.data?.data || []);
     } catch (error) {
-      console.error(
-        "Error fetching orders:",
-        error.response?.data || error.message
-      );
-      setErrorMsg(
-        error.response?.data?.message ||
-          `Failed to fetch orders (Status: ${error.response?.status || "Network"})`
-      );
+      setErrorMsg(error.response?.data?.message || "Failed to fetch orders");
       setOrders([]);
     }
   };
@@ -94,32 +61,40 @@ const AdminPanel = () => {
   }, []);
 
   useEffect(() => {
-    if (activeTab === "orders") {
-      fetchOrders();
-    }
+    if (activeTab === "orders") fetchOrders();
   }, [activeTab]);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
+  }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">Admin Panel</h1>
+    <div className="max-w-7xl mx-auto px-6 py-10 bg-base-200 rounded-xl shadow-lg">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold">
+          <span className="text-white">Admin</span>{" "}
+          <span className="text-blue-500">Panel</span>
+        </h1>
+        <p className="text-gray-400 mt-2">
+          Manage users, orders, and courier assignments from one place.
+        </p>
+      </div>
 
-      {/* DaisyUI Tabs */}
-      <div className="tabs justify-center mb-6">
+      {/* Tabs */}
+      <div className="tabs tabs-boxed justify-center mb-8">
         <a
-          className={`tab tab-bordered ${activeTab === "users" ? "tab-active" : ""}`}
+          className={`tab ${activeTab === "users" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("users")}
         >
           Users
         </a>
         <a
-          className={`tab tab-bordered ${activeTab === "orders" ? "tab-active" : ""}`}
+          className={`tab ${activeTab === "orders" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("orders")}
         >
           Orders
@@ -134,9 +109,9 @@ const AdminPanel = () => {
 
       {/* Users Tab */}
       {activeTab === "users" && (
-        <div className="overflow-x-auto bg-base-100 shadow rounded-lg">
+        <div className="overflow-x-auto bg-base-100 rounded-lg shadow-md p-4">
           {users.length === 0 ? (
-            <p className="text-center p-6">No users found.</p>
+            <p className="text-center text-gray-400 py-6">No users found.</p>
           ) : (
             <table className="table table-zebra w-full">
               <thead>
@@ -157,18 +132,22 @@ const AdminPanel = () => {
                     <td>
                       <span
                         className={`badge ${
-                          user.role === "courier"
-                            ? "badge-success"
-                            : "badge-info"
+                          user.role === "admin"
+                            ? "badge-error"
+                            : user.role === "courier"
+                              ? "badge-success"
+                              : user.role === "partner"
+                                ? "badge-warning"
+                                : "badge-info"
                         }`}
                       >
                         {user.role}
                       </span>
                     </td>
                     <td>
-                      {user.role === "courier" ? (
+                      {user.role === "courier" || user.role === "admin" ? (
                         <button className="btn btn-disabled btn-sm">
-                          Courier
+                          {user.role}
                         </button>
                       ) : (
                         <button
@@ -189,9 +168,9 @@ const AdminPanel = () => {
 
       {/* Orders Tab */}
       {activeTab === "orders" && (
-        <div className="overflow-x-auto bg-base-100 shadow rounded-lg">
+        <div className="overflow-x-auto bg-base-100 rounded-lg shadow-md p-4">
           {orders.length === 0 ? (
-            <p className="text-center p-6">No orders found.</p>
+            <p className="text-center text-gray-400 py-6">No orders found.</p>
           ) : (
             <table className="table table-zebra w-full">
               <thead>

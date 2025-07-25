@@ -49,8 +49,12 @@ function LoginPage({ onClose }) {
 
       setUser(userData);
 
-      // Only auto-close if not admin
-      if (userData?.role !== "admin") {
+      // Role-based redirection
+      if (userData?.role === "admin") {
+        window.location.href = "/admin-panel";
+      } else if (userData?.role === "partner") {
+        window.location.href = "/partner/dashboard";
+      } else {
         if (onClose) onClose();
         window.location.href = "/";
       }
@@ -59,10 +63,6 @@ function LoginPage({ onClose }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAdminRedirect = () => {
-    window.location.href = "/admin-panel";
   };
 
   return (
@@ -137,24 +137,15 @@ function LoginPage({ onClose }) {
           </button>
         </form>
 
-        {user?.role === "admin" && (
-          <button
-            onClick={handleAdminRedirect}
-            className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-all duration-200"
-          >
-            Go to Admin Panel
-          </button>
-        )}
-
         <div className="flex flex-col sm:flex-row justify-between items-center mt-6 text-sm gap-2 sm:gap-0">
           <a
-            href="#"
+            href="/"
             className="link text-blue-300 hover:text-blue-200 hover:underline transition-colors duration-200"
           >
             Forgot password?
           </a>
           <a
-            href="/signup"
+            href="/"
             className="link text-blue-300 hover:text-blue-200 hover:underline transition-colors duration-200"
           >
             Don't have an account? Sign Up
