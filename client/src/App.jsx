@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-
+import PartnerReg from './components/partnerreg.jsx';
 import Navbar from './components/Navbar.jsx';
 import PartnerWithUsPage from './components/PartnerWithUs.jsx';
 import PrintingPage from './components/DocumentSubmit.jsx';
@@ -12,19 +12,12 @@ import UserDashboard from './components/OrderDashboard.jsx';
 import CourierDashboard from './components/CourierDashboard.jsx';
 import ProfilePage from './components/Profile.jsx';
 import PaymentButton from './components/PaymentButton.jsx';
-import AboutUs from './components/AboutUs.jsx';
-import PrivacyPolicy from './components/PrivacyPolicy.jsx';
-import ContactUs from './components/ContactUs.jsx';
-import TermsAndService from './components/TermsAndService.jsx';
-import BlogPage from './components/BlogPage.jsx';
-import CareerPage from './components/CareerPage.jsx';
-
 
 import './App.css';
 
 const App = () => {
   const location = useLocation();
-  const noNavbarPaths = ['/signup'];
+  const noNavbarPaths = ['/registerPartner']; // updated path
   const shouldShowNavbar = !noNavbarPaths.includes(location.pathname);
 
   return (
@@ -33,6 +26,7 @@ const App = () => {
 
       <main className="flex-grow">
         <Routes>
+          <Route path="/registerPartner" element={<PartnerReg />} />
           <Route path="/" element={<><HeroSection /><Card /></>} />
           <Route path="/print-section" element={<PrintingPage />} />
           <Route path="/cart" element={<CartPage />} />
@@ -41,12 +35,6 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/payment" element={<PaymentButton amount={199} />} />
           <Route path="/courier-dashboard" element={<><Navbar /><CourierDashboard /><Footer /></>} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/blog" element={<BlogPage />} />
-          {/* <Route path="/careers" element={<CareerPage />} /> */}
-          {/* <Route path="/terms-of-service" element={<TermsAndService />} /> */}
         </Routes>
       </main>
 

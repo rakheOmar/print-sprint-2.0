@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Briefcase,
   Users,
@@ -12,6 +13,11 @@ import {
 
 function PartnerWithUsPage() {
   const [activeFAQIndex, setActiveFAQIndex] = useState(null);
+  const navigate = useNavigate();  // for navigation
+
+  const handleRegisterClick = () => {
+    navigate('/registerPartner');  // navigate to the registration page
+  };
 
   const magicSteps = [
     {
@@ -96,7 +102,12 @@ function PartnerWithUsPage() {
         <p className="text-lg max-w-xl mx-auto">
           Accelerate your business journey with us—where ambition turns into action and results.
         </p>
-        {/* <button className="btn btn-primary">Register Now</button> */}
+        <button 
+          className="btn btn-primary" 
+          onClick={handleRegisterClick}
+        >
+          Register Now
+        </button>
       </div>
 
       {/* Intro */}
